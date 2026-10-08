@@ -1,0 +1,16 @@
+
+
+ion-alert .alert-radio-label,
+ion-alert .alert-checkbox-label {
+  color: #ffffff !important;
+}
+
+/* Opción seleccionada */
+ion-alert [aria-checked="true"] .alert-radio-label {
+  color: #d4a85a !important; /* cámbialo por tu color dorado */
+}
+
+/* Título del diálogo (ahora se ve vacío) */
+ion-alert .alert-title {
+  color: #ffffff !important;
+}
