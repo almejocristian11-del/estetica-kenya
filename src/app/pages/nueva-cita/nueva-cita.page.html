@@ -1,0 +1,246 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/servicios"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Nueva cita
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Selección de servicios, paquetes y productos -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Puedes elegir uno o varios para tu cita</ion-card-subtitle>
+      <ion-card-title>Servicios, paquetes y productos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Seleccionar servicios</ion-label>
+          <ion-select
+            [multiple]="true"
+            placeholder="Elige uno o varios servicios"
+            [(ngModel)]="esteticaService.serviciosSeleccionadosCita"
+          >
+            @for (s of serviciosLista; track s.id) {
+              <ion-select-option [value]="s.id">
+                {{ s.nombre }} (${{ s.precio }})
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Seleccionar paquetes</ion-label>
+          <ion-select
+            [multiple]="true"
+            placeholder="Elige uno o varios paquetes"
+            [(ngModel)]="esteticaService.paquetesSeleccionadosCita"
+          >
+            @for (p of paquetesLista; track p.id) {
+              <ion-select-option [value]="p.id">
+                {{ p.nombre }} (${{ p.precio }})
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Agregar productos a la cita</ion-label>
+          <ion-select
+            [multiple]="true"
+            placeholder="Opcional: agrega productos"
+            [(ngModel)]="esteticaService.productosSeleccionadosCita"
+          >
+            @for (pr of productosLista; track pr.id) {
+              <ion-select-option [value]="pr.id">
+                {{ pr.nombre }} (${{ pr.precio }})
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Selección visual de Fecha y Hora -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Horario de atención: 08:00 am a 06:00 pm</ion-card-subtitle>
+      <ion-card-title>Fecha y hora de la cita</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Resumen de fecha seleccionada + botón para abrir calendario completo -->
+      <div class="selector-encabezado">
+        <div class="selector-info">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <div>
+            <small>Día seleccionado</small>
+            <strong>{{ fechaLegible }}</strong>
+          </div>
+        </div>
+        <ion-button
+          size="small"
+          fill="outline"
+          shape="round"
+          (click)="mostrarCalendario = !mostrarCalendario"
+        >
+          {{ mostrarCalendario ? 'Ocultar calendario' : 'Calendario' }}
+        </ion-button>
+      </div>
+
+      <!-- Tira rápida de días próximos -->
+      <div class="tira-dias">
+        @for (d of diasRapidos; track d.fechaIso) {
+          <button
+            type="button"
+            class="chip-dia"
+            [class.activo]="fechaIsoExtraida === d.fechaIso"
+            (click)="seleccionarDiaRapido(d.fechaIso)"
+          >
+            <span class="dia-sem">{{ d.diaSemana }}</span>
+            <strong class="dia-num">{{ d.numeroDia }}</strong>
+            <span class="dia-mes">{{ d.mesCorto }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Mini calendario desplegable cuando el usuario quiere buscar otra fecha -->
+      @if (mostrarCalendario) {
+        <div class="contenedor-picker">
+          <ion-datetime
+            presentation="date"
+            [min]="fechaMinimaHoy"
+            [(ngModel)]="fechaSeleccionada"
+            (ionChange)="alCambiarFechaCalendario()"
+            class="mini-picker"
+          ></ion-datetime>
+        </div>
+      }
+
+      <!-- Encabezado de hora seleccionada -->
+      <div class="selector-encabezado ion-margin-top">
+        <div class="selector-info">
+          <ion-icon name="time-outline"></ion-icon>
+          <div>
+            <small>Hora seleccionada</small>
+            <strong>{{ hora12Legible }}</strong>
+          </div>
+        </div>
+        <ion-button
+          size="small"
+          fill="outline"
+          shape="round"
+          (click)="mostrarRelojExacto = !mostrarRelojExacto"
+        >
+          {{ mostrarRelojExacto ? 'Ocultar reloj' : 'Otra hora' }}
+        </ion-button>
+      </div>
+
+      <!-- Cuadrícula limpia de horarios de 8:00 am a 6:00 pm -->
+      <div class="grid-horarios">
+        @for (h of horariosDisponibles; track h.hora24) {
+          <button
+            type="button"
+            class="chip-hora"
+            [class.activo]="hora24Extraida === h.hora24"
+            [class.ocupado]="estaOcupadoHorario(h.hora24)"
+            [disabled]="estaOcupadoHorario(h.hora24)"
+            (click)="seleccionarHorarioChip(h.hora24)"
+          >
+            {{ estaOcupadoHorario(h.hora24) ? h.etiqueta + ' (Ocupado)' : h.etiqueta }}
+          </button>
+        }
+      </div>
+
+      <!-- Mini reloj desplegable opcional -->
+      @if (mostrarRelojExacto) {
+        <div class="contenedor-picker ion-margin-top">
+          <ion-datetime
+            presentation="time"
+            hourCycle="h12"
+            [(ngModel)]="horaSeleccionada"
+            class="mini-picker"
+          ></ion-datetime>
+        </div>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Resumen de cobro de la cita y botón de pago -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen de la cita</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @if (itemsSeleccionadosDetalle.length === 0) {
+        <p class="aviso-cita">
+          Selecciona al menos un servicio o paquete arriba para continuar con tu cita.
+        </p>
+      } @else if (soloTieneProductosSeleccionados) {
+        <p class="aviso-cita error">
+          Has seleccionado únicamente productos. Para agendar una cita debes incluir al menos un servicio o paquete.
+        </p>
+      }
+
+      <ion-list>
+        @for (it of itemsSeleccionadosDetalle; track it.id) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ it.nombre }}</h3>
+              <p>{{ it.tipo | titlecase }} • ${{ it.precioUnitario }}.00 MXN</p>
+            </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              size="small"
+              (click)="quitarItemDeCita(it.id)"
+            >
+              Quitar
+            </ion-button>
+          </ion-item>
+        }
+
+        <ion-item lines="none">
+          <ion-checkbox slot="start" [(ngModel)]="notificarHoraAntes"></ion-checkbox>
+          <ion-label>Notificar una hora antes de la cita</ion-label>
+        </ion-item>
+      </ion-list>
+
+      <div class="ion-margin-top">
+        <p><strong>Fecha y hora:</strong> {{ fechaIsoExtraida }} | {{ hora12Legible }}</p>
+        <h3 class="total-cita">
+          Total a pagar: ${{ totalCita.toFixed(2) }} MXN
+        </h3>
+      </div>
+
+      <ion-button
+        expand="block"
+        shape="round"
+        class="ion-margin-top"
+        (click)="procederAlPagoDeCita()"
+      >
+        <ion-icon slot="start" name="card-outline"></ion-icon>
+        Continuar al pago
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab active" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

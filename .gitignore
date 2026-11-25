@@ -68,3 +68,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Android build cache
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+

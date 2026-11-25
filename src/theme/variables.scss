@@ -1,2 +1,19 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+:root {
+  /** Paleta Oficial EsteticaKenyaFX + app-movil **/
+  --ion-color-primary: #db829a;
+  --ion-color-primary-rgb: 219, 130, 154;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #c17287;
+  --ion-color-primary-tint: #df8ea4;
+
+  --ion-color-secondary: #f5c3cc;
+  --ion-color-secondary-rgb: 245, 195, 204;
+  --ion-color-secondary-contrast: #333333;
+  --ion-color-secondary-contrast-rgb: 51, 51, 51;
+  --ion-color-secondary-shade: #d8acb4;
+  --ion-color-secondary-tint: #f6c9d1;
+
+  --ion-background-color: #f4e9ec;
+  --ion-text-color: #333333;
+}

@@ -1,0 +1,155 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/servicios"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Historial de compras
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Búsqueda y filtros del arreglo -->
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Buscar por folio, cliente o servicio</ion-label>
+        <ion-input
+          type="text"
+          placeholder="Ej. FOLIO-KENYA o Corte..."
+          [(ngModel)]="busquedaFolioOCliente"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Filtrar por fecha</ion-label>
+        <ion-input type="date" [(ngModel)]="filtroFecha"></ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label position="stacked">Ordenar por</ion-label>
+        <ion-select [(ngModel)]="orden">
+          <ion-select-option value="recientes">Más recientes</ion-select-option>
+          <ion-select-option value="montoMayor">Mayor monto</ion-select-option>
+          <ion-select-option value="montoMenor">Menor monto</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  @if (compraEditando) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Editar folio: {{ compraEditando.folio }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Fecha</ion-label>
+          <ion-input type="date" [(ngModel)]="compraEditando.fecha"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Método de pago</ion-label>
+          <ion-input type="text" [(ngModel)]="compraEditando.metodoPago"></ion-input>
+        </ion-item>
+        @for (it of compraEditando.items; track $index) {
+          <ion-item>
+            <ion-label position="stacked">
+              Cantidad ({{ it.nombre }} — ${{ it.precioUnitario }} c/u)
+            </ion-label>
+            <ion-input
+              type="number"
+              min="1"
+              step="1"
+              [(ngModel)]="it.cantidad"
+              (ionInput)="recalcularItemEditado(it)"
+            ></ion-input>
+          </ion-item>
+        }
+        <p class="ion-padding-top">
+          <small>
+            Vista previa: Subtotal ${{ subtotalEdicion.toFixed(2) }} | IVA incluido ${{ ivaEdicion.toFixed(2) }} |
+            <strong>Total: ${{ totalEdicion.toFixed(2) }} MXN</strong>
+          </small>
+        </p>
+        <ion-button expand="block" shape="round" class="ion-margin-top" (click)="guardarEdicion()">
+          Guardar cambios
+        </ion-button>
+        <ion-button expand="block" fill="outline" shape="round" class="ion-margin-top" (click)="cancelarEdicion()">
+          Cancelar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <!---IonList: Contenedor de elementos de lista, que puede contener elementos de lista (ion-item) y otros componentes relacionados con la lista. Se utiliza para mostrar una lista de elementos en la interfaz de usuario.-->
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        Registros ({{ comprasFiltradas.length }}) | Acumulado: ${{ granTotalAcumulado.toFixed(2) }}
+      </ion-label>
+    </ion-list-header>
+
+    @if (comprasFiltradas.length === 0) {
+      <ion-item>
+        <ion-label class="ion-text-center empty-message">
+          No hay compras registradas con los filtros actuales.
+        </ion-label>
+      </ion-item>
+    } @else {
+      <!---track compra.id: Le indica a Angular cómo identificar de manera única cada elemento de la lista , de forma eficiente -->
+      @for (compra of comprasFiltradas; track compra.id) {
+        <ion-item-sliding>
+          <ion-item>
+            <ion-label class="ion-text-wrap">
+              <h2><strong>{{ compra.folio }}</strong> ({{ compra.fecha }})</h2>
+              <p>Cliente: {{ compra.cliente }} | {{ compra.metodoPago }}</p>
+              @for (it of compra.items; track it.id) {
+                <p>• {{ it.cantidad }}x {{ it.nombre }} (${{ it.precioUnitario }} c/u)</p>
+              }
+              <p>
+                Subtotal: ${{ compra.subtotal.toFixed(2) }} | IVA incluido: ${{ compra.iva.toFixed(2) }} |
+                <strong>Total pagado: ${{ compra.total.toFixed(2) }} MXN</strong>
+              </p>
+              <div class="action-row">
+                <ion-button size="small" fill="outline" (click)="iniciarEdicion(compra)">
+                  <ion-icon slot="start" name="create-outline"></ion-icon>
+                  Editar
+                </ion-button>
+                <ion-button
+                  size="small"
+                  color="danger"
+                  (click)="confirmDeleteCompra(compra)"
+                >
+                  <ion-icon slot="start" name="trash"></ion-icon>
+                  Eliminar
+                </ion-button>
+              </div>
+            </ion-label>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmDeleteCompra(compra)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    }
+  </ion-list>
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab active" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

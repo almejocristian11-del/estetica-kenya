@@ -1,0 +1,119 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Servicios y paquetes
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/carrito">
+        <ion-icon name="cart-outline"></ion-icon>
+        <ion-badge color="light">{{ esteticaService.totalArticulosCarrito }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-searchbar
+    placeholder="Buscar servicio, paquete o producto..."
+    [(ngModel)]="terminoBusqueda"
+  ></ion-searchbar>
+
+  <ion-grid class="ion-no-padding ion-margin-bottom">
+    <ion-row>
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Categoría</ion-label>
+          <ion-select [(ngModel)]="categoriaFiltro">
+            <ion-select-option value="todos">Todos</ion-select-option>
+            <ion-select-option value="dama">Dama</ion-select-option>
+            <ion-select-option value="caballero">Caballero</ion-select-option>
+            <ion-select-option value="boda">Boda</ion-select-option>
+            <ion-select-option value="producto">Productos</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="6">
+        <ion-item>
+          <ion-label position="stacked">Precio</ion-label>
+          <ion-select [(ngModel)]="rangoPrecio">
+            <ion-select-option value="todos">Cualquier precio</ion-select-option>
+            <ion-select-option value="economico">Hasta $150</ion-select-option>
+            <ion-select-option value="medio">$151 - $300</ion-select-option>
+            <ion-select-option value="premium">Más de $300</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  @for (sec of seccionesVisibles; track sec.clave) {
+    <div class="wf-divider">{{ sec.titulo }}</div>
+
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        @for (item of itemsDeSeccion(sec.clave); track item.id) {
+          <ion-col size="6">
+            <ion-card class="prod-card" (click)="abrirDetalle(item)">
+              <img [src]="item.imagen" [alt]="item.nombre" class="prod-img" />
+              <ion-card-header>
+                <ion-card-title class="prod-title">{{ item.nombre }}</ion-card-title>
+                <ion-card-subtitle>${{ item.precio }}.00</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                @if (item.tipo === 'producto') {
+                  <ion-button
+                    expand="block"
+                    size="small"
+                    shape="round"
+                    (click)="agregarAlCarritoRapido(item, $event)"
+                  >
+                    Al carrito
+                  </ion-button>
+                  <ion-button
+                    expand="block"
+                    size="small"
+                    fill="outline"
+                    shape="round"
+                    (click)="agregarACitaRapido(item, $event)"
+                  >
+                    Agregar a cita
+                  </ion-button>
+                } @else {
+                  <ion-button
+                    expand="block"
+                    size="small"
+                    shape="round"
+                    (click)="agregarACitaRapido(item, $event)"
+                  >
+                    Agendar en cita
+                  </ion-button>
+                }
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        } @empty {
+          <ion-col size="12">
+            <p class="ion-text-center">Sin resultados en esta categoría.</p>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  }
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab active" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

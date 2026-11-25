@@ -1,0 +1,68 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Calendario de citas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-button expand="block" shape="round" routerLink="/nueva-cita">
+    <ion-icon slot="start" name="add-outline"></ion-icon>
+    Agendar nueva cita
+  </ion-button>
+
+  <div class="wf-divider">Citas pagadas y agendadas</div>
+
+  @if (citasAgendadas.length === 0) {
+    <p class="empty-message">No tienes citas programadas por el momento.</p>
+  } @else {
+    @for (cita of citasAgendadas; track cita.id) {
+      <ion-card class="cita-card">
+        <ion-card-header>
+          <ion-card-subtitle>
+            {{ cita.fechaHora }}
+            @if (cita.folioPago) {
+              | {{ cita.folioPago }}
+            }
+          </ion-card-subtitle>
+          <ion-card-title>{{ cita.titulo }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @if (cita.items && cita.items.length > 0) {
+            @for (it of cita.items; track it.id) {
+              <p>• {{ it.nombre }} - ${{ it.precioUnitario }}.00</p>
+            }
+          }
+          <h3 class="cita-precio">Total pagado: ${{ cita.precio.toFixed(2) }} MXN</h3>
+          <ion-button
+            color="danger"
+            size="small"
+            shape="round"
+            class="ion-margin-top"
+            (click)="confirmarCancelarCita(cita)"
+          >
+            Cancelar
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab active" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

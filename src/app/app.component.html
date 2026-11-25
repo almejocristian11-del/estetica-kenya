@@ -1,3 +1,59 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu contentId="main-content" type="overlay" class="estetica-menu">
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="wf-toolbar">
+        <ion-title>Estetica Unisex Kenya</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="wf-content">
+      <div class="menu-profile">
+        <img
+          src="assets/images/logo.png"
+          alt="Logo Estética Unisex Kenya"
+          class="menu-logo-img"
+        />
+        <div class="menu-user-info">
+          <strong>{{ esteticaService.usuario.nombreCompleto }}</strong>
+          <span>{{ esteticaService.usuario.handle }}</span>
+          <small class="session-pill">
+            {{ esteticaService.sesionActiva ? '● Sesión activa' : '○ Sin sesión' }}
+          </small>
+        </div>
+      </div>
+
+      <ion-list lines="none" class="menu-list">
+        @for (p of menuPages; track p.url) {
+          @if (!p.soloAdmin || esteticaService.esAdmin) {
+            <ion-menu-toggle auto-hide="true">
+              <ion-item
+                [routerLink]="[p.url]"
+                routerDirection="root"
+                routerLinkActive="selected-menu-item"
+                detail="false"
+                class="menu-item"
+              >
+                <ion-icon slot="start" [name]="p.icon"></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          }
+        }
+
+        <ion-menu-toggle auto-hide="true">
+          <ion-item
+            button
+            (click)="cerrarSesionMenu()"
+            detail="false"
+            class="menu-item logout-item"
+          >
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
+            <ion-label>Cerrar sesión</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

@@ -1,0 +1,147 @@
+.ion-title-bold {
+  font-weight: 900;
+}
+
+.selector-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fdf6f8;
+  border: 1px solid #e4c4cb;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.selector-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--ion-color-primary);
+  }
+
+  small {
+    display: block;
+    font-size: 0.72rem;
+    color: #7a5c62;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.92rem;
+    color: #2b2124;
+  }
+}
+
+.tira-dias {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.chip-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  padding: 7px 5px;
+  border-radius: 12px;
+  border: 1px solid #dcc0c7;
+  background: #fff;
+  color: #3a2a2e;
+  cursor: pointer;
+
+  .dia-sem {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .dia-num {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 2px 0;
+  }
+
+  .dia-mes {
+    font-size: 0.66rem;
+  }
+
+  &.activo {
+    background: var(--ion-color-primary);
+    border-color: var(--ion-color-primary);
+    color: #fff;
+  }
+}
+
+.grid-horarios {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.chip-hora {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid #dcc0c7;
+  background: #fff;
+  color: #3a2a2e;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &.activo {
+    background: var(--ion-color-primary);
+    border-color: var(--ion-color-primary);
+    color: #fff;
+  }
+
+  &.ocupado {
+    background: #f3ecee;
+    color: #9e8c90;
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+}
+
+.contenedor-picker {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.mini-picker {
+  margin: 0 auto;
+  border-radius: 14px;
+  border: 1px solid #d6b2ba;
+  --background: #fff9fb;
+}
+
+.total-cita {
+  font-weight: 800;
+  color: var(--ion-color-primary);
+  margin-top: 8px;
+}
+
+.aviso-cita {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fdf6f8;
+  border: 1px solid #e4c4cb;
+  color: #5c3740;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+
+  &.error {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+  }
+}

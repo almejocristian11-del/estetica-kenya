@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/servicios"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Detalle
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/carrito">
+        <ion-icon name="cart-outline"></ion-icon>
+        <ion-badge color="light">{{ esteticaService.totalArticulosCarrito }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-card class="detail-card">
+    <img [src]="itemActual.imagen" [alt]="itemActual.nombre" class="detail-img" />
+    <ion-card-header>
+      <ion-card-subtitle>{{ itemActual.duracion }} | {{ itemActual.tipo }}</ion-card-subtitle>
+      <ion-card-title>{{ itemActual.nombre }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <div class="wf-divider">Descripción</div>
+      <p>{{ itemActual.descripcion }}</p>
+      <h2 class="price-text">${{ itemActual.precio }}.00 MXN</h2>
+
+      <ion-button
+        expand="block"
+        shape="round"
+        class="ion-margin-top"
+        (click)="agregarACita()"
+      >
+        {{ itemActual.tipo === 'producto' ? 'Agregar producto a una cita' : 'Agendar en una cita' }}
+      </ion-button>
+
+      @if (itemActual.tipo === 'producto') {
+        <ion-button
+          expand="block"
+          fill="outline"
+          shape="round"
+          class="ion-margin-top"
+          (click)="agregarAlCarrito()"
+        >
+          Agregar al carrito de compras
+        </ion-button>
+      } @else {
+        <p class="ion-text-center ion-margin-top">
+          <small>* Los servicios y paquetes se atienden exclusivamente mediante cita.</small>
+        </p>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab active" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>

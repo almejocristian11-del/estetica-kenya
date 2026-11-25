@@ -1,0 +1,178 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="/servicios"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center ion-title-bold">
+      Gestión de productos y servicios
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Formulario para agregar o editar un servicio, paquete o producto de la estética -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Panel exclusivo de Administrador</ion-card-subtitle>
+      <ion-card-title>
+        {{ editingId() === null ? 'Nuevo servicio, paquete o producto' : 'Editar registro' }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @if (error()) {
+        <p class="error-msg">{{ error() }}</p>
+      }
+
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input
+            type="text"
+            [(ngModel)]="form.nombre"
+            placeholder="Ej. Corte en capas, Paquete Novia o Shampoo..."
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Precio en MXN</ion-label>
+          <ion-input type="number" [(ngModel)]="form.precio" min="1"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Categoría</ion-label>
+          <ion-select [(ngModel)]="form.categoria" (ionChange)="alCambiarCategoria()">
+            <ion-select-option value="dama">Cortes para dama</ion-select-option>
+            <ion-select-option value="caballero">Cortes para caballero</ion-select-option>
+            <ion-select-option value="boda">Paquete para Boda</ion-select-option>
+            <ion-select-option value="producto">Productos</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Tipo</ion-label>
+          <ion-select [(ngModel)]="form.tipo">
+            <ion-select-option value="servicio">Servicio</ion-select-option>
+            <ion-select-option value="paquete">Paquete</ion-select-option>
+            <ion-select-option value="producto">Producto</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Duración o presentación</ion-label>
+          <ion-input
+            type="text"
+            [(ngModel)]="form.duracion"
+            placeholder="Ej. 45 min o Envase 500 ml"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">Imagen del producto, servicio o paquete</ion-label>
+          <div class="selector-imagen-box">
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              class="input-archivo-oculto"
+              (change)="alSeleccionarArchivoImagen($event)"
+            />
+            <ion-button
+              expand="block"
+              fill="outline"
+              shape="round"
+              size="small"
+              (click)="fileInput.click()"
+            >
+              <ion-icon slot="start" name="image-outline"></ion-icon>
+              Elegir foto de mi galería o dispositivo
+            </ion-button>
+
+            @if (nombreArchivoImagen()) {
+              <small class="archivo-nombre">Archivo: {{ nombreArchivoImagen() }}</small>
+            }
+
+            @if (form.imagen) {
+              <div class="preview-imagen-box">
+                <img [src]="form.imagen" alt="Vista previa" class="preview-imagen" />
+              </div>
+            }
+          </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea
+            rows="2"
+            [(ngModel)]="form.descripcion"
+            placeholder="Descripción del servicio, paquete o producto"
+          ></ion-textarea>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" shape="round" class="ion-margin-top" (click)="save()">
+        {{ editingId() === null ? 'Guardar en catálogo' : 'Actualizar cambios' }}
+      </ion-button>
+
+      @if (editingId() !== null) {
+        <ion-button expand="block" fill="outline" shape="round" class="ion-margin-top" (click)="cancel()">
+          Cancelar edición
+        </ion-button>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de servicios, paquetes y productos de la aplicación dividida por categoría -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>
+        {{ esteticaService.itemsCatalogo.length }} registros en la aplicación
+      </ion-card-subtitle>
+      <ion-card-title>Catálogo de Estética Unisex Kenya</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @for (sec of categoriasSecciones; track sec.clave) {
+        <div class="wf-divider">{{ sec.titulo }}</div>
+
+        <div class="lista-fakestore ion-margin-bottom">
+          @for (item of itemsPorCategoria(sec.clave); track item.id) {
+            <div class="fila-producto">
+              <img [src]="item.imagen" [alt]="item.nombre" class="miniatura" />
+              <div class="info-producto">
+                <h4>{{ item.nombre }}</h4>
+                <p>
+                  {{ item.duracion }} •
+                  <strong>${{ item.precio }}.00 MXN</strong>
+                </p>
+              </div>
+              <div class="acciones">
+                <ion-button size="small" color="primary" (click)="edit(item)">
+                  Editar
+                </ion-button>
+                <ion-button size="small" color="danger" (click)="confirmarEliminar(item)">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          } @empty {
+            <p class="ion-text-center">Sin registros en esta categoría.</p>
+          }
+        </div>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer class="wf-bottom-footer">
+  <div class="wf-bottom-nav">
+    <button type="button" class="wf-nav-tab" routerLink="/servicios">
+      <ion-icon name="compass-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab" routerLink="/calendario-citas">
+      <ion-icon name="calendar-outline"></ion-icon>
+    </button>
+    <button type="button" class="wf-nav-tab active" routerLink="/usuario">
+      <ion-icon name="person-outline"></ion-icon>
+    </button>
+  </div>
+</ion-footer>
